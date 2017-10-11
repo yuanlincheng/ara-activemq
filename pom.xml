@@ -5,6 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com</groupId>
     <artifactId>ara-activemq</artifactId>
+    <packaging>jar</packaging>
     <version>1.0.0</version>
     <!-- 集中定义依赖版本号 -->
     <properties>
@@ -83,15 +84,15 @@
         </dependency>
     </dependencies>
     <build>
-        <!--<resources>-->
-            <!--<resource>-->
-                <!--<directory>src/main/resources</directory>-->
-                <!--<excludes>-->
-                    <!--<exclude>*.xml</exclude>-->
-                    <!--<exclude>*.properties</exclude>-->
-                <!--</excludes>-->
-            <!--</resource>-->
-        <!--</resources>-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <exclude>*.xml</exclude>
+                    <exclude>*.properties</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <!-- 设置源文件编码方式 -->
             <plugin>

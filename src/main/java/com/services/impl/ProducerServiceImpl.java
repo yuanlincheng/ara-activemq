@@ -13,19 +13,30 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.jms.Destination;
+import javax.jms.Topic;
 
 @Service("producerService")
 public class ProducerServiceImpl implements ProducerService {
 
-    @Resource(name="jmsTemplate")
-    private JmsTemplate jmsTemplate;
-
+    @Resource(name="jmsQueueTemplate")
+    private JmsTemplate jmsQueueTemplate;
+    @Resource(name="jmsTopicTemplate")
+    private JmsTemplate jmsTopicTemplate;
     @Override
-    public boolean sendMessage(Destination destination, String msg) {
+    public boolean sendQueueMessage(Destination destination, String msg) {
         System.out.println("向队列" + destination.toString() + "发送了消息------------" + msg);
-        jmsTemplate.send(destination, session -> {
+        jmsQueueTemplate.send(destination, session -> {
             return session.createTextMessage(msg);
         });
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean sendTopicMessage(Topic topic, String msg) {
+        System.out.println("向主题" + topic.toString() + "发送了消息------------" + msg);
+        jmsTopicTemplate.send(topic, session -> {
+            return session.createTextMessage(msg);
+        });
+        return true;
     }
 }

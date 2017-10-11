@@ -21,13 +21,16 @@ public class ConsumerServiceImplTest extends BaseJunit4Test {
     @Autowired
     private ConsumerService consumerService;
 
-    //队列名gzframe.demo
-    @Resource(name="demoQueueDestination")
-    private Destination demoQueueDestination;
+    //队列名
+    @Resource(name="queueDestination")
+    private Destination queueDestination;
+    //主题名
+    @Resource(name="topicDestination")
+    private Destination topicDestination;
 
     @Test
     public void testReceive() throws Exception {
-        TextMessage tm = consumerService.receive(demoQueueDestination);
+        TextMessage tm = consumerService.receive(queueDestination);
         System.out.println(tm.getText());
     }
 }

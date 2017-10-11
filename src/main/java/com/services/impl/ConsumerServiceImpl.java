@@ -19,7 +19,7 @@ import javax.jms.TextMessage;
 @Service("consumerService")
 public class ConsumerServiceImpl implements ConsumerService {
 
-    @Resource(name="jmsTemplate")
+    @Resource(name="jmsQueueTemplate")
     private JmsTemplate jmsTemplate;
 
     @Override

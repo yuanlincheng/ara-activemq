@@ -15,9 +15,18 @@
        default-autowire="byName" default-lazy-init="false">
 
     <!-- 扫描项目路径-->
-    <context:component-scan base-package="com.services" />
+    <context:component-scan base-package="com.services,com.listener" />
 
-    <amq:connectionFactory id="amqConnectionFactory" brokerURL="tcp://192.168.3.234:61616" userName="admin" password="admin"/>
+    <bean id="amqConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+        <property name="connectionFactory">
+            <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+                <property name="brokerURL"> <value>tcp://192.168.3.234:61616</value> </property>
+                <property name="userName"> <value>admin</value> </property>
+                <property name="password"> <value>admin</value> </property>
+            </bean>
+        </property>
+        <property name="maxConnections" value="100"></property>
+    </bean>
 
     <!-- Spring Caching连接工厂 -->
     <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -26,17 +35,19 @@
     </bean>
 
     <!-- 定义消息队列（Queue） -->
-    <bean id="demoQueueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+    <bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
         <!-- 设置消息队列的名字 -->
-        <constructor-arg>
-            <value>TestActiveMQ</value>
-        </constructor-arg>
+        <constructor-arg name="name" value="TestQueue"/>
+    </bean>
+
+    <!--测试Topic-->
+    <bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg index="0" value="TestTopic"/>
     </bean>
 
     <!-- 配置JMS模板（Queue），Spring提供的JMS工具类，它发送、接收消息。 -->
-    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
         <property name="connectionFactory" ref="connectionFactory" />
-        <property name="receiveTimeout" value="10000" />
         <!-- true是topic，false是queue，默认是false，此处显示写出false -->
         <property name="pubSubDomain" value="false" />
     </bean>
@@ -49,18 +60,14 @@
         <property name="pubSubDomain" value="true" />
     </bean>
 
-    <!-- 消息消费者 start-->
+    <!-- 定义Queue监听器 -->
+    <jms:listener-container destination-type="queue" container-type="default" connection-factory="connectionFactory" acknowledge="auto">
+        <jms:listener destination="TestQueue" ref="queueMessageListener"/>
+    </jms:listener-container>
 
-    <!--&lt;!&ndash; 定义Queue监听器 &ndash;&gt;-->
-    <!--<jms:listener-container destination-type="queue" container-type="default" connection-factory="connectionFactory" acknowledge="auto">-->
-        <!--<jms:listener destination="TestActiveMQ" ref="queueReceiver1"/>-->
-    <!--</jms:listener-container>-->
-
-    <!--&lt;!&ndash; 定义Topic监听器 &ndash;&gt;-->
-    <!--<jms:listener-container destination-type="topic" container-type="default" connection-factory="connectionFactory" acknowledge="auto">-->
-        <!--<jms:listener destination="test.topic" ref="topicReceiver1"/>-->
-        <!--<jms:listener destination="test.topic" ref="topicReceiver2"/>-->
-    <!--</jms:listener-container>-->
-
+    <!-- 定义Topic监听器 -->
+    <jms:listener-container destination-type="topic" container-type="default" connection-factory="connectionFactory" acknowledge="auto">
+        <jms:listener destination="TestTopic" ref="topicMessageListener"/>
+    </jms:listener-container>
     <!-- 消息消费者 end -->
 </beans>

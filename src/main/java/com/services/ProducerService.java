@@ -9,6 +9,7 @@ package com.services;
 
 
 import javax.jms.Destination;
+import javax.jms.Topic;
 
 
 public interface ProducerService {
@@ -18,6 +19,14 @@ public interface ProducerService {
 	 * @param msg（消息数据）
 	 * @return  boolean 发送是否成功
 	 */
-	boolean sendMessage(Destination destination, String msg);
+	boolean sendQueueMessage(Destination destination, String msg);
+
+    /**
+     * 向指定的消息队列中发送消息
+     * @param topic（目标主题）
+     * @param msg（消息数据）
+     * @return  boolean 发送是否成功
+     */
+    boolean sendTopicMessage(Topic topic, String msg);
 
 }
